@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.MainFragment">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="9"
+        >
+        <TextView
+            android:id="@+id/greet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="欢迎使用\n今天又被什么难住了呢？"
+            android:textSize="30dp"
+            android:fontFamily="sans-serif-medium"
+            >
+        </TextView>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入要翻译的文本"
+            android:maxLines="5"
+            >
+        </EditText>
+        <TextView
+            android:layout_marginTop="570dp"
+            android:id="@+id/prise"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="生活就像海洋，只有意志坚强的人才能到达彼岸"
+            android:layout_gravity="center">
+        </TextView>
+    </LinearLayout>
+
+
+
+</FrameLayout>

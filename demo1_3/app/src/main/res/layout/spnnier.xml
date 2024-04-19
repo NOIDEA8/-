@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="45dp"
+    android:layout_marginTop="10dp"
+    >
+
+    <Spinner
+        android:id="@+id/spinner_from"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:entries="@array/from"
+        android:prompt="@string/from"
+        android:spinnerMode="dropdown">
+    </Spinner>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="9dp"
+        android:text="->"
+        android:textSize="30dp">
+    </TextView>
+
+    <Spinner
+        android:id="@+id/spinner_to"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:entries="@array/to"
+        android:prompt="@string/to"
+        android:spinnerMode="dropdown">
+    </Spinner>
+</LinearLayout>

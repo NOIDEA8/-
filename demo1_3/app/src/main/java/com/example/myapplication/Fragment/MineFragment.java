@@ -1,21 +1,33 @@
 package com.example.myapplication.Fragment;
 
+import static android.content.Context.MODE_PRIVATE;
+import static android.content.Intent.getIntent;
+
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.myapplication.Activities.Change_icon;
+import com.example.myapplication.Activities.Change_name;
+import com.example.myapplication.Activities.history_show;
+import com.example.myapplication.Activities.login;
 import com.example.myapplication.R;
 import com.example.myapplication.Database.UsersDatabaseHelper;
 
@@ -23,11 +35,19 @@ public class MineFragment extends Fragment implements View.OnClickListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
     private String mParam1;
     private String mParam2;
     private TextView account;
     private TextView name;
     private TextView change_name;
+    private TextView change_Icon;
+    private TextView history_search;
+    private TextView exit;
+    private LinearLayout lChangename;
+    private LinearLayout lHistory;
+    private LinearLayout lexit;
     private Context context;
 
     public MineFragment() {
@@ -70,8 +90,21 @@ public class MineFragment extends Fragment implements View.OnClickListener {
         account = view.findViewById(R.id.detail_account);
         name = view.findViewById(R.id.detail_name);
         change_name = view.findViewById(R.id.change_name);
+        //change_Icon=view.findViewById(R.id.change_icon);
+        history_search=view.findViewById(R.id.history_search);
+        exit=view.findViewById(R.id.exit);
+        lChangename=view.findViewById(R.id.lchange_name);
+        lHistory=view.findViewById(R.id.lshow_history_search);
+        lexit=view.findViewById(R.id.lexit_account);
+
         change_name.setOnClickListener(this);
-        showDetail(mParam1, mParam2);
+       /* change_Icon.setOnClickListener(this);*/
+        history_search.setOnClickListener(this);
+        exit.setOnClickListener(this);
+        lChangename.setOnClickListener(this);
+        lHistory.setOnClickListener(this);
+        lexit.setOnClickListener(this);
+        showDetail(mParam2);
 
     }
 
@@ -79,35 +112,51 @@ public class MineFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.change_name:
+            case R.id.lchange_name:
                 changeName();
-                Toast.makeText(context, "成功", Toast.LENGTH_SHORT).show();
+                break;
+           /*case R.id.change_icon:
+                Intent intentIcon=new Intent(context, Change_icon.class);
+                startActivity(intentIcon);
+                break;*/
+            case R.id.history_search:
+            case R.id.lshow_history_search:
+                Intent intenthistory=new Intent(context, history_show.class);
+                Intent intent=getActivity().getIntent();
+                intenthistory.putExtra("account",intent.getStringExtra("account"));
+                startActivity(intenthistory);
+                break;
+            case R.id.exit:
+            case R.id.lexit_account:
+                Intent intentlog=new Intent(context, login.class);
+                startActivity(intentlog);
+                getActivity().finish();
+                pref=context.getSharedPreferences("logined",MODE_PRIVATE);
+                SharedPreferences.Editor editor =pref.edit();
+                editor.clear();
+                editor.apply();
                 break;
             default:
                 break;
         }
     }
-
-    private void showDetail(String newName, String newAccount) {
-        name.setText(newName);
-        account.setText(newAccount);
-    }
-
-    private void changeName() {
+    @SuppressLint("Range")
+    private void showDetail(String newAccount) {
         UsersDatabaseHelper dbhelp = new UsersDatabaseHelper(context, "Users", null, 1);
         SQLiteDatabase db = dbhelp.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("name", "大哥");
-        db.update("Users", cv, "account=?", new String[]{mParam2});
-        cv.clear();
         Cursor cursor = db.query("Users", null, "account=?", new String[]{mParam2}, null, null, null);
         int num = cursor.getCount();//问符合条件值个数
         cursor.moveToFirst();
         if (num > 0) {
-            @SuppressLint("Range") String newName = cursor.getString(cursor.getColumnIndex("name"));
-            @SuppressLint("Range") String newAccount = cursor.getString(cursor.getColumnIndex("account"));
-            showDetail(newName, newAccount);
+            name.setText(cursor.getString(cursor.getColumnIndex("name")));
+            account.setText(newAccount);
         }
     }
 
-
+    private void changeName() {
+        Intent intent=new Intent(context, Change_name.class);
+        intent.putExtra("account",mParam2);
+        intent.putExtra("MineFragID",android.os.Process.myPid());
+        startActivity(intent);
+    }
 }

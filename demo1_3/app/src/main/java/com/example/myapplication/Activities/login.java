@@ -1,6 +1,7 @@
 package com.example.myapplication.Activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -27,6 +28,8 @@ public class login extends BaseActivity {
     private  CheckBox rememberPassword;
     private EditText editAccount;
     private EditText editPassword;
+    private String name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +40,7 @@ public class login extends BaseActivity {
         editPassword= findViewById(R.id.password_edit);
         TextView sign_up = findViewById(R.id.sign_up);
         rememberPassword=findViewById(R.id.remember_password);
-
+        name="";
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +61,7 @@ public class login extends BaseActivity {
             }
         });
 
-        pref= PreferenceManager.getDefaultSharedPreferences(this);
+        pref= getSharedPreferences("logined",MODE_PRIVATE);
         Boolean isRemember=pref.getBoolean("remember_password",false);
         if(isRemember){
             String account=pref.getString("account","");
@@ -66,9 +69,16 @@ public class login extends BaseActivity {
             editAccount.setText(account);
             editPassword.setText(password);
             rememberPassword.setChecked(true);
+            Intent intent = new Intent(login.this, Mainpage.class);
+            intent.putExtra("name", name);
+            intent.putExtra("account", account);
+            startActivity(intent);
+            Toast.makeText(login.this, "您已成功登录", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
+    @SuppressLint("Range")
     private void checkLogin(String account, String password) {
         UsersDatabaseHelper dbHelper = new UsersDatabaseHelper(this, "Users", null, 1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -89,7 +99,7 @@ public class login extends BaseActivity {
                 editor.clear();
             }
             editor.apply();
-            @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex("name"));
+            name = cursor.getString(cursor.getColumnIndex("name"));
             Intent intent = new Intent(login.this, Mainpage.class);
             intent.putExtra("name", name);
             intent.putExtra("account", account);

@@ -2,11 +2,13 @@ package com.example.myapplication.Activities;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.myapplication.ActivityCollector.BaseActivity;
@@ -17,12 +19,14 @@ import java.util.Random;
 
 public class sign_up extends BaseActivity {
     private UsersDatabaseHelper dbHelper;
+    private ImageButton back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up);
         dbHelper = new UsersDatabaseHelper(this, "Users", null, 1);
+        back=findViewById(R.id.back);
 
         EditText newname = findViewById(R.id.edit_new_name);
         EditText newpassword = findViewById(R.id.edit_new_password);
@@ -39,11 +43,20 @@ public class sign_up extends BaseActivity {
                 }
             }
         });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void addUsers(String name, String password) {
         String account = randomAccount();
+        int usersnum=0;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor=db.query("Users",null,"account=?",new String[]{account},null,null,null,null);
+        while (cursor.getCount()!=0&&usersnum!=999999){usersnum++;account = randomAccount();}
         ContentValues cv = new ContentValues();
         cv.put("name", name);
         cv.put("password", password);

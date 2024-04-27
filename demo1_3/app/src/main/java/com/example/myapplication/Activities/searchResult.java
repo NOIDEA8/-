@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,7 +46,8 @@ public class searchResult extends AppCompatActivity {
     private LinearLayout search_result;
     private Intent intent;
     private Intent result_intent;
-    private ProgressBar pb;
+    private ImageButton ibBack;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class searchResult extends AppCompatActivity {
         search_result = findViewById(R.id.search_result_xml);
         toriginContent = findViewById(R.id.origin_sentence);
         endResult = findViewById(R.id.result_sentence);
-        pb = findViewById(R.id.pb);
+        ibBack=findViewById(R.id.back);
 
         intent = getIntent();
         result_intent = new Intent();
@@ -73,9 +75,16 @@ public class searchResult extends AppCompatActivity {
             showMsg("传入为空");
             soriginContent = "";
         }
+        ibBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         toriginContent.setText(soriginContent);
         search_result.setVisibility(View.INVISIBLE);
-        pb.setVisibility(View.VISIBLE);
+        /*ibBack.setVisibility(View.INVISIBLE);*/
     }
 
 
@@ -182,8 +191,8 @@ public class searchResult extends AppCompatActivity {
                         Log.d("searchResult", "更新UI");
                         sendresult = result.getTrans_result().get(0).getDst();
                         endResult.setText(sendresult);
-                        pb.setVisibility(View.INVISIBLE);
                         search_result.setVisibility(View.VISIBLE);
+                      /*  ibBack.setVisibility(View.VISIBLE);*/
                         returnResult(result_intent);
                         record(result_intent);
                     }
@@ -232,6 +241,7 @@ public class searchResult extends AppCompatActivity {
             cv.put("fromLanguage", fromLanguage);
             cv.put("translated", translated);
             cv.put("toLanguage", toLanguage);
+            cv.put("account",getIntent().getStringExtra("account"));
             db.insert("HistoryWords", null, cv);
             cv.clear();
             Log.d("searchResult", fromLanguage + toLanguage);
@@ -245,7 +255,7 @@ public class searchResult extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = null;
         try {
-            cursor = db.query("HistoryWords", null, "origin=? AND translated=?", new String[]{origin, translated},
+            cursor = db.query("HistoryWords", null, "origin=? AND translated=?AND account=?", new String[]{origin, translated,getIntent().getStringExtra("account")},
                     null, null, null);
             if (cursor.getCount() != 0) {
                 returnString = false;

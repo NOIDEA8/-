@@ -1,8 +1,10 @@
 package com.example.myapplication.Activities;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.EditText;
@@ -10,10 +12,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.myapplication.ActivityCollector.BaseActivity;
+import com.example.myapplication.Database.UsersDatabaseHelper;
+import com.example.myapplication.Fragment.AItryFragment;
+import com.example.myapplication.RecyclerViews.History_words_Adaptor;
+import com.example.myapplication.RecyclerViews.TipsKnowledge;
+import com.example.myapplication.RecyclerViews.TipsKnowledgeAdaptor;
 import com.example.myapplication.VPAdaptor.MyFragmentStateVPAdaptor;
 import com.example.myapplication.Fragment.MainFragment;
 import com.example.myapplication.Fragment.MineFragment;
@@ -21,22 +31,26 @@ import com.example.myapplication.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-public class Mainpage extends BaseActivity implements View.OnClickListener {
+public class Mainpage extends AppCompatActivity implements View.OnClickListener {
     private ViewPager mViewPager;//300659，退出程序就退出应用的特性要改912325  205716
     private MyFragmentStateVPAdaptor mStateVPAdaptor;
     private List<Fragment> mFragmentList;
-    private TextView tMain, tMine;
+    private TextView tMain, tMine,tAi;
+    private  MineFragment mineFragment;
+    private MainFragment mainFragment;
+    private AItryFragment aItryFragment;
+    private Intent intent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_page);
         //实例对应
-
         initView();
         initData();
-
-        //创建一个fragment的adaptor，然后设置为ViewPager的adaptor，这样就可把viewpager里放入碎片（主要贪图数据源）
+        Log.d("我在这","我在这");
         mStateVPAdaptor = new MyFragmentStateVPAdaptor(getSupportFragmentManager(), mFragmentList);
         mViewPager.setAdapter(mStateVPAdaptor);
         //页面滑动的监听
@@ -56,9 +70,13 @@ public class Mainpage extends BaseActivity implements View.OnClickListener {
 
             }
         });
-        setClickListener();
-        //默认首页
-        onViewPagerSelected(0);
+
+            //创建一个fragment的adaptor，然后设置为ViewPager的adaptor，这样就可把viewpager里放入碎片（主要贪图数据源）
+            setClickListener();
+            //默认首页
+            onViewPagerSelected(0) ;
+
+
     }
 
     @Override
@@ -69,6 +87,9 @@ public class Mainpage extends BaseActivity implements View.OnClickListener {
                 mViewPager.setCurrentItem(0);
                 break;
             case R.id.mine_text:
+                mViewPager.setCurrentItem(2);
+                break;
+            case R.id.ai_text:
                 mViewPager.setCurrentItem(1);
                 break;
             default:
@@ -80,6 +101,7 @@ public class Mainpage extends BaseActivity implements View.OnClickListener {
     private void setClickListener() {
         tMine.setOnClickListener(this);
         tMain.setOnClickListener(this);
+        tAi.setOnClickListener(this);
     }
 
     //自定义方法
@@ -93,6 +115,10 @@ public class Mainpage extends BaseActivity implements View.OnClickListener {
 
                 break;
             case 1:
+                tAi.setTextColor(Color.BLACK);
+                tAi.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40);
+                break;
+            case 2:
                 tMine.setTextColor(Color.BLACK);
                 tMine.setTextSize(TypedValue.COMPLEX_UNIT_SP, 40); // 使用SP单位，16是字体大小
                 break;
@@ -104,6 +130,8 @@ public class Mainpage extends BaseActivity implements View.OnClickListener {
     private void primaryButtonState() {
         tMain.setTextColor(Color.GRAY);
         tMain.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+        tAi.setTextColor(Color.GRAY);
+        tAi.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
         tMine.setTextColor(Color.GRAY);
         tMine.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
     }
@@ -112,19 +140,51 @@ public class Mainpage extends BaseActivity implements View.OnClickListener {
         mViewPager = findViewById(R.id.vp);
         tMain = findViewById(R.id.main_text);
         tMine = findViewById(R.id.mine_text);
+        tAi=findViewById(R.id.ai_text);
     }
 
     private void initData() {
         mFragmentList = new ArrayList<>();
-        Intent intent = getIntent();
-        MineFragment mineFragment = MineFragment.newInstance(intent.getStringExtra("name"),
+        intent = getIntent();
+
+        mineFragment = MineFragment.newInstance(intent.getStringExtra("name"),
                 intent.getStringExtra("account"));
         mineFragment.onAttach(Mainpage.this);
-        MainFragment mainFragment = MainFragment.newInstance(null, null);
+
+        aItryFragment=AItryFragment.newInstance(null,null,this);
+        aItryFragment.onAttach(Mainpage.this);
+
+        mainFragment = MainFragment.newInstance(null, null);
+
         mFragmentList.add(mainFragment);
+        mFragmentList.add(aItryFragment);
         mFragmentList.add(mineFragment);
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+    }
 
-
+    @Override
+    protected void onNewIntent(Intent intentnew) {
+        super.onNewIntent(intent);
+        Log.d("我在这","我在这33333");
+        intent=intentnew;
+        mViewPager.setAdapter(mStateVPAdaptor);
+        if (intent.hasExtra("vpPage")) {
+            Log.d("我在这","我在这");
+            int value = intent.getIntExtra("vpPage", 0);
+            mViewPager.setCurrentItem(value, false);
+            /*int preAPPID=intent.getIntExtra("activityID",0);
+            android.os.Process.killProcess(preAPPID);*/
+            setClickListener();
+            onViewPagerSelected(value);
+        }else{
+            //创建一个fragment的adaptor，然后设置为ViewPager的adaptor，这样就可把viewpager里放入碎片（主要贪图数据源）
+            setClickListener();
+            //默认首页
+            onViewPagerSelected(0) ;
+        }
+    }
 }

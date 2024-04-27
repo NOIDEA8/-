@@ -4,33 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#E8E2E2"
-    android:padding="5dp"
     >
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="#E8E2E2">
-    </View>
-    <include layout="@layout/spnnier"></include>
-    <TextView
-        android:id="@+id/text_for_show"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        >
-    </TextView>
     <SearchView
-        android:id="@+id/searchView"
+        android:layout_marginTop="35dp"
+        android:id="@+id/search_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:iconifiedByDefault="false"
         android:queryHint="请输入搜索内容" />
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/history_words"
+        android:padding="5dp"
+        android:id="@+id/show_history"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-
-        >
+        android:layout_height="match_parent">
     </androidx.recyclerview.widget.RecyclerView>
-
 </LinearLayout>

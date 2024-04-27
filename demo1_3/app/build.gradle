@@ -29,6 +29,8 @@ android {
 }
 
 dependencies {
+    //星火大模型
+    implementation files('libs/SparkChain.aar')
     //网络访问
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     //下拉框

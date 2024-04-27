@@ -65,6 +65,7 @@ public class search extends AppCompatActivity {
                 //返回false，表示你没有处理用户的搜索请求，SearchView可能会尝试执行其自己的默认搜索行为，
                 // 这取决于你的应用是如何配置SearchView的
                 startSearch.putExtra("origin_Contant", query);
+                startSearch.putExtra("account",getIntent().getStringExtra("account"));
                 startActivityForResult(startSearch, 1);
                 return false;
             }
@@ -74,7 +75,14 @@ public class search extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 int textLength = newText.length();
                 if (textLength != 0) {
-                   searchByText(newText);
+                    List<HistoryWords> temp=searchByText(newText);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initRecycler(temp);
+                        }
+                    });
+
                 } else {
                     Log.d("search","执行1次");
                     runOnUiThread(new Runnable() {
@@ -113,6 +121,7 @@ public class search extends AppCompatActivity {
                 sto = to.getSelectedItem().toString();
                 tolanguage = chooseType(sto);
                 startSearch.putExtra("toLanguage", tolanguage);
+                startSearch.putExtra("account",getIntent().getStringExtra("account").toString());
             }
 
             @Override
@@ -127,9 +136,10 @@ public class search extends AppCompatActivity {
         //Toast.makeText(this,adaptor.getItemCount(),Toast.LENGTH_SHORT).show();
     }
 
-    private void searchByText(String text){
+    private List<HistoryWords>searchByText(String text){
         List<HistoryWords> tempList = new ArrayList<>();
         int textLength = text.length();
+
         for (HistoryWords hws : history_words) {
             int wordLength = hws.getOrigin().length();
             if (wordLength < textLength) {
@@ -141,19 +151,13 @@ public class search extends AppCompatActivity {
                 }
             }
         }
-        List<HistoryWords> arrangeList=arrange(tempList);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                initRecycler(arrangeList);
-            }
-        });
+        return tempList;
     }
 
     private void initRecycler( List<HistoryWords> resouseList) {
 
         layoutManager = new LinearLayoutManager(this);
-        adaptor = new History_words_Adaptor(resouseList, this);
+        adaptor = new History_words_Adaptor(resouseList, this,this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adaptor);
     }
@@ -214,8 +218,8 @@ public class search extends AppCompatActivity {
         return return_type;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+   /* @Override*/
+    /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case 1:
@@ -226,16 +230,20 @@ public class search extends AppCompatActivity {
                     addNewData(getResult);
                 }
         }
-    }
+    }*/
 
     @SuppressLint("Range")
     private void addDataFromBase() {
+        int n=0;
         HistoryWordDatabaseHelper dbHelper = new HistoryWordDatabaseHelper(this, "HistoryWords",
                 null, 1);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Intent intent=getIntent();
+        String account=intent.getStringExtra("account");
         Cursor cursor = null;
         try {
-            cursor = db.query("HistoryWords", null, null, null, null, null, null);
+            cursor = db.query("HistoryWords", null, "account=?", new String[]{account},
+                    null, null, "id DESC");
             if (cursor.moveToFirst()) {
                 do {
                     HistoryWords hw = new HistoryWords();
@@ -244,7 +252,8 @@ public class search extends AppCompatActivity {
                     hw.setFromLanguage(cursor.getString(cursor.getColumnIndex("fromLanguage")));
                     hw.setToLanguage(cursor.getString(cursor.getColumnIndex("toLanguage")));
                     history_words.add(hw);
-                } while (cursor.moveToNext());
+                    n++;
+                } while (cursor.moveToNext()&&n<15);
             }
         } catch (SQLException e) {
             // Handle the exception here
@@ -254,10 +263,10 @@ public class search extends AppCompatActivity {
                 cursor.close();
             }
         }
-        history_words=arrange(history_words);
+        //history_words=arrange(history_words);
     }
 
-    private void addNewData(Intent intent) {
+    /*private void addNewData(Intent intent) {
         String origin1 = intent.getStringExtra("origin");
         String result1 = intent.getStringExtra("result");
         if (origin1 != null && result1 != null) {
@@ -266,39 +275,7 @@ public class search extends AppCompatActivity {
             hw.setTranslated(intent.getStringExtra("result"));
             history_words.add(hw);
         }
-        history_words=arrange(history_words);
-    }
-
-    private List<HistoryWords> arrange(List<HistoryWords> list){
-        //temp仅为了排名字
-        List<String> temp=new ArrayList<>();
-        //最后返回的排好的list
-        List<HistoryWords> finalList=new ArrayList<>();
-        //取出传入的列表的原句内容
-        for(HistoryWords hs:list){
-            String stemp=hs.getOrigin();
-            temp.add(stemp);
-        }
-        //排序
-        String[] arrays = temp.toArray(new String[temp.size()]);
-        List<String> ids=new ArrayList<>();
-        Comparator<Object> com = Collator.getInstance(java.util.Locale.CHINA);
-        Arrays.sort(arrays, com);
-        //排序后与源数据比较后返回处理后的数据源
-        for(String s:arrays){
-            for(HistoryWords hs1:list){
-                String origin=hs1.getOrigin();
-                if(origin.equals(s)){
-                    if(ids.contains(hs1.getTranslated())){
-
-                    } else{
-                        finalList.add(hs1);
-                        ids.add(hs1.getTranslated());
-                        break;}
-                }
-            }
-        }
-        return finalList;
-    }
+        //history_words=arrange(history_words);
+    }*/
 
 }

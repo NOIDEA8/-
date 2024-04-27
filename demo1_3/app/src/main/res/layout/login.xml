@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F1F4F4"
+    android:padding="12dp"
     >
     <androidx.cardview.widget.CardView
         android:layout_gravity="right"
@@ -42,12 +43,13 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             app:cardElevation="35dp">
+
             <ImageView
                 android:id="@+id/appIcon"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/app_logo"
                 android:scaleType="centerCrop"
+                android:src="@drawable/app_logo"
                 app:cardUseCompatPadding="true">
                 <!-- cardUseCompatPadding使用与旧版兼容的内边距，确保阴影显示正确 -->
                 <!--scaleType修边  -->

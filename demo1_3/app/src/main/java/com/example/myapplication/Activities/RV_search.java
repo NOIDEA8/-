@@ -1,7 +1,5 @@
 package com.example.myapplication.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,8 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebStorage;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -46,13 +44,14 @@ public class RV_search extends BaseActivity {
     private TextView otvo;
     private TextView otvr;
     private LinearLayout recyclervew_search;
+    private ImageButton ibrvBack;
     private final String appId = "20240414002023290";
     private final String key = "Sfk0qmfG7EnoDD_U0ccD";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.recyclerview_search);
+        setContentView(R.layout.rv_search);
         initlanguage();
     }
 
@@ -67,6 +66,7 @@ public class RV_search extends BaseActivity {
         otvo=findViewById(R.id.rv_origin_sentence);
         otvr=findViewById(R.id.rv_resulContent);
         recyclervew_search=findViewById(R.id.recyclervew_search);
+        ibrvBack=findViewById(R.id.rv_back);
 
         toWhich.setSelection(0);
         toLanguage = chooseType(toWhich.getSelectedItem().toString());
@@ -85,6 +85,13 @@ public class RV_search extends BaseActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 translation(origincontent);
+            }
+        });
+
+        ibrvBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }
@@ -227,6 +234,7 @@ public class RV_search extends BaseActivity {
             cv.put("fromLanguage", fromLanguage);
             cv.put("translated", translated);
             cv.put("toLanguage", toLanguage);
+            cv.put("account",getIntent().getStringExtra("account"));
             db.insert("HistoryWords", null, cv);
             cv.clear();
             Log.d("searchResult", fromLanguage + toLanguage);

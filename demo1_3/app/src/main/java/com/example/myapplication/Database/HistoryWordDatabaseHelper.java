@@ -15,7 +15,8 @@ public class HistoryWordDatabaseHelper extends SQLiteOpenHelper {
             "origin text," +
             "fromLanguage text," +
             "translated text," +
-            "toLanguage text)";
+            "toLanguage text," +
+            "account text)";
     private Context mcontext;
 
     public HistoryWordDatabaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {

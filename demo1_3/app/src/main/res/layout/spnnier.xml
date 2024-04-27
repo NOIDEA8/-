@@ -4,6 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="45dp"
     android:layout_marginTop="10dp"
+    android:layout_gravity="center_horizontal"
     >
 
     <Spinner
@@ -12,15 +13,17 @@
         android:layout_height="30dp"
         android:entries="@array/from"
         android:prompt="@string/from"
-        android:spinnerMode="dropdown">
+        android:spinnerMode="dropdown"
+        >
     </Spinner>
 
     <TextView
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginTop="9dp"
-        android:text="->"
-        android:textSize="30dp">
+        android:text="TO"
+        android:textSize="20dp">
     </TextView>
 
     <Spinner

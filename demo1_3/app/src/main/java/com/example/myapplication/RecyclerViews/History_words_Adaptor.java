@@ -1,5 +1,6 @@
 package com.example.myapplication.RecyclerViews;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -21,6 +22,7 @@ import java.util.List;
 public class History_words_Adaptor extends RecyclerView.Adapter<History_words_Adaptor.ViewHolder> {
     private List<HistoryWords> mwordsList;
     private Context context;
+    private Activity activity;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         View wordView;
@@ -35,9 +37,10 @@ public class History_words_Adaptor extends RecyclerView.Adapter<History_words_Ad
         }
     }//建立内部类viewfolder继承自recyclerview
 
-    public History_words_Adaptor(List<HistoryWords> mwordsList, Context context) {
+    public History_words_Adaptor(List<HistoryWords> mwordsList, Context context,Activity activity) {
         this.mwordsList = mwordsList;
         this.context = context;
+        this.activity=activity;
     }
 
     @Override
@@ -61,10 +64,12 @@ public class History_words_Adaptor extends RecyclerView.Adapter<History_words_Ad
                 int position = holder.getAdapterPosition();
                 HistoryWords hw = mwordsList.get(position);
                 Intent intent = new Intent(context, RV_search.class);
+                Intent intent1=activity.getIntent();
                 intent.putExtra("origin", hw.getOrigin());
                 intent.putExtra("fromLanguage", hw.getFromLanguage());
                 intent.putExtra("toLanguage",hw.getToLanguage());
                 intent.putExtra("translated",hw.getTranslated());
+                intent.putExtra("account",intent1.getStringExtra("account"));
                 Log.d("MainPage", hw.getFromLanguage());
                 Log.d("MainPage", hw.getOrigin());
                 context.startActivity(intent);

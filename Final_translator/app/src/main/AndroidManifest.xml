@@ -26,6 +26,9 @@
         <activity
             android:name=".Activities.Change_name"
             android:exported="false" />
+        <activity android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <receiver
             android:name=".BrocastReceiver.RVSearchReceiver"

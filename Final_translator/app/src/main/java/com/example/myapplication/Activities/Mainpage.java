@@ -148,7 +148,8 @@ public class Mainpage extends AppCompatActivity implements View.OnClickListener 
         intent = getIntent();
 
         mineFragment = MineFragment.newInstance(intent.getStringExtra("name"),
-                intent.getStringExtra("account"));
+                intent.getStringExtra("account"),
+                this);
         mineFragment.onAttach(Mainpage.this);
 
         aItryFragment=AItryFragment.newInstance(null,null);
